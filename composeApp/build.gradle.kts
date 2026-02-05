@@ -46,6 +46,8 @@ kotlin {
             implementation(libs.androidx.navigation)
 
             implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
             api(libs.orbit.core)
             api(libs.koin.core)
             implementation(libs.koin.compose)
