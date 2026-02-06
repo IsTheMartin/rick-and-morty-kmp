@@ -1,4 +1,4 @@
-package com.mrtnmrls.rickandmortykmp.presentation.screens
+package com.mrtnmrls.rickandmortykmp.presentation.screens.character
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -96,7 +96,7 @@ private fun CharacterItem(character: Character) {
                 model = character.image,
                 contentDescription = character.name,
                 modifier = Modifier.width(100.dp)
-                    .clip(RoundedCornerShape(8.dp)),
+                    .clip(androidx.compose.foundation.shape.RoundedCornerShape(8.dp)),
                 contentScale = ContentScale.Crop
             )
             Column(

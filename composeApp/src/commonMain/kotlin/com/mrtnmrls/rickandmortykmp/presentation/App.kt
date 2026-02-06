@@ -28,9 +28,9 @@ import coil3.compose.setSingletonImageLoaderFactory
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import com.mrtnmrls.rickandmortykmp.presentation.model.NavigationBarItemModel
 import com.mrtnmrls.rickandmortykmp.presentation.navigation.Screen
-import com.mrtnmrls.rickandmortykmp.presentation.screens.CharactersScreen
+import com.mrtnmrls.rickandmortykmp.presentation.screens.character.CharactersScreen
 import com.mrtnmrls.rickandmortykmp.presentation.screens.EpisodesScreen
-import com.mrtnmrls.rickandmortykmp.presentation.screens.LocationsScreen
+import com.mrtnmrls.rickandmortykmp.presentation.screens.location.LocationsScreen
 
 @Composable
 @Preview
