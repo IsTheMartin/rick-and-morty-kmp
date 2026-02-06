@@ -1,6 +1,6 @@
 package com.mrtnmrls.rickandmortykmp.di
 
-import com.mrtnmrls.rickandmortykmp.presentation.viewmodels.CharacterViewModel
+import com.mrtnmrls.rickandmortykmp.presentation.viewmodels.character.CharacterViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 

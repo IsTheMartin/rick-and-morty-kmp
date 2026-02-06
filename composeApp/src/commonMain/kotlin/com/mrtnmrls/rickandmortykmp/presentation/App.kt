@@ -16,8 +16,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
@@ -41,6 +45,9 @@ fun App() {
         }
 
         val navController = rememberNavController()
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentDestination = navBackStackEntry?.destination
+
         val items = listOf(
             NavigationBarItemModel(
                 icon = Icons.Default.Person,
@@ -58,9 +65,6 @@ fun App() {
                 route = Screen.Episodes
             )
         )
-        var selectedItem by remember {
-            mutableStateOf(items.first().route)
-        }
 
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -69,13 +73,20 @@ fun App() {
                 NavigationBar {
                     items.forEach { item ->
                         NavigationBarItem(
-                            selected = item.route == selectedItem,
+                            selected = currentDestination?.hierarchy?.any {
+                                it.hasRoute(item.route::class)
+                            } == true,
                             label = {
                                 Text(text = item.label)
                             },
                             onClick = {
-                                selectedItem = item.route
-                                navController.navigate(item.route)
+                                navController.navigate(item.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
                             },
                             icon = {
                                 Icon(
