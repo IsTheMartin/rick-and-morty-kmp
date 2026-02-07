@@ -1,6 +1,7 @@
 package com.mrtnmrls.rickandmortykmp.data.remote
 
 import com.mrtnmrls.rickandmortykmp.data.model.CharacterResponse
+import com.mrtnmrls.rickandmortykmp.data.model.EpisodeResponse
 import com.mrtnmrls.rickandmortykmp.data.model.LocationResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -26,6 +27,16 @@ class RickAndMortyApi(
     ): LocationResponse {
         return httpClient
             .get("location") {
+                parameter("page", page)
+            }
+            .body()
+    }
+
+    suspend fun getEpisodes(
+        page: Int
+    ): EpisodeResponse {
+        return httpClient
+            .get("episode") {
                 parameter("page", page)
             }
             .body()
