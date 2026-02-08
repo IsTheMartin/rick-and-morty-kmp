@@ -19,17 +19,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHost
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import com.mrtnmrls.rickandmortykmp.presentation.model.NavigationBarItemModel
+import com.mrtnmrls.rickandmortykmp.presentation.navigation.LocalNavController
 import com.mrtnmrls.rickandmortykmp.presentation.navigation.Screen
 import com.mrtnmrls.rickandmortykmp.presentation.screens.character.CharactersScreen
+import com.mrtnmrls.rickandmortykmp.presentation.screens.characterdetail.CharacterDetailScreen
 import com.mrtnmrls.rickandmortykmp.presentation.screens.episode.EpisodesScreen
+import com.mrtnmrls.rickandmortykmp.presentation.screens.home.HomeScreen
 import com.mrtnmrls.rickandmortykmp.presentation.screens.location.LocationsScreen
 
 @Composable
@@ -43,77 +48,21 @@ fun App() {
                 }
                 .build()
         }
-
         val navController = rememberNavController()
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentDestination = navBackStackEntry?.destination
-
-        val items = listOf(
-            NavigationBarItemModel(
-                icon = Icons.Default.Person,
-                label = "Personajes",
-                route = Screen.Characters
-            ),
-            NavigationBarItemModel(
-                icon = Icons.Default.LocationOn,
-                label = "Lugares",
-                route = Screen.Locations
-            ),
-            NavigationBarItemModel(
-                icon = Icons.Default.Movie,
-                label = "Episodios",
-                route = Screen.Episodes
-            )
-        )
-
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            containerColor = Color.White,
-            bottomBar = {
-                NavigationBar {
-                    items.forEach { item ->
-                        NavigationBarItem(
-                            selected = currentDestination?.hierarchy?.any {
-                                it.hasRoute(item.route::class)
-                            } == true,
-                            label = {
-                                Text(text = item.label)
-                            },
-                            onClick = {
-                                navController.navigate(item.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            },
-                            icon = {
-                                Icon(
-                                    imageVector = item.icon,
-                                    contentDescription = item.label
-                                )
-                            }
-                        )
-                    }
-                }
-            }
-        ) { paddingValues ->
+        CompositionLocalProvider(LocalNavController provides navController) {
             NavHost(
                 navController = navController,
-                startDestination = Screen.Characters,
-                modifier = Modifier.padding(paddingValues)
+                startDestination = Screen.Home
             ) {
-                composable<Screen.Characters> {
-                    CharactersScreen()
+                composable<Screen.Home> {
+                    HomeScreen()
                 }
-                composable<Screen.Locations> {
-                    LocationsScreen()
-                }
-                composable<Screen.Episodes> {
-                    EpisodesScreen()
+
+                composable<Screen.CharactersDetail> {
+                    CharacterDetailScreen()
                 }
             }
         }
+
     }
 }

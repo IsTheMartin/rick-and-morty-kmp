@@ -29,4 +29,8 @@ class CharacterViewModel(
         }
     }
 
+    fun onCharacterClicked(id: Int) = intent {
+        postSideEffect(CharacterSideEffect.NavigateToCharacterDetail(id))
+    }
+
 }

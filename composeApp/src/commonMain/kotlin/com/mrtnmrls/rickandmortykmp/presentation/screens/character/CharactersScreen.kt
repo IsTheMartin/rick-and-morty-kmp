@@ -1,6 +1,7 @@
 package com.mrtnmrls.rickandmortykmp.presentation.screens.character
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,21 +35,41 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.mrtnmrls.rickandmortykmp.domain.model.Character
+import com.mrtnmrls.rickandmortykmp.presentation.navigation.LocalNavController
+import com.mrtnmrls.rickandmortykmp.presentation.navigation.Screen
 import com.mrtnmrls.rickandmortykmp.presentation.screens.character.preview.CharacterStateParameterProvider
+import com.mrtnmrls.rickandmortykmp.presentation.utils.statusColor
+import com.mrtnmrls.rickandmortykmp.presentation.viewmodels.character.CharacterSideEffect
 import com.mrtnmrls.rickandmortykmp.presentation.viewmodels.character.CharacterState
 import com.mrtnmrls.rickandmortykmp.presentation.viewmodels.character.CharacterViewModel
 import org.koin.compose.viewmodel.koinViewModel
+import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun CharactersScreen() {
     val viewModel = koinViewModel<CharacterViewModel>()
     val state = viewModel.container.stateFlow.collectAsStateWithLifecycle().value
+    val navController = LocalNavController.current
 
-    CharacterContent(state)
+    viewModel.collectSideEffect { sideEffect ->
+        when(sideEffect) {
+            is CharacterSideEffect.NavigateToCharacterDetail -> {
+                navController.navigate(Screen.CharactersDetail(sideEffect.id))
+            }
+        }
+    }
+
+    CharacterContent(
+        state = state,
+        onCharacterClick = viewModel::onCharacterClicked
+    )
 }
 
 @Composable
-private fun CharacterContent(state: CharacterState) {
+private fun CharacterContent(
+    state: CharacterState,
+    onCharacterClick: (Int) -> Unit
+) {
     Box(
         modifier = Modifier.fillMaxSize()
             .background(Color.White),
@@ -68,7 +89,10 @@ private fun CharacterContent(state: CharacterState) {
                     items = state.characters,
                     key = { it.id }
                 ) { character ->
-                    CharacterItem(character)
+                    CharacterItem(
+                        character = character,
+                        onClick = onCharacterClick
+                    )
                 }
             }
         }
@@ -76,11 +100,17 @@ private fun CharacterContent(state: CharacterState) {
 }
 
 @Composable
-private fun CharacterItem(character: Character) {
+private fun CharacterItem(
+    character: Character,
+    onClick: (Int) -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(4.dp),
+            .padding(4.dp)
+            .clickable {
+                onClick(character.id)
+            },
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
@@ -116,17 +146,11 @@ private fun CharacterItem(character: Character) {
                     modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val statusColor = when (character.status.lowercase()) {
-                        "alive" -> Color.Green
-                        "dead" -> Color.Red
-                        else -> Color.Gray
-                    }
-
                     Box(
                         modifier = Modifier
                             .size(8.dp)
                             .clip(CircleShape)
-                            .background(statusColor)
+                            .background(character.statusColor())
                     )
                     Text(
                         text = "${character.status} - ${character.species}",
@@ -164,6 +188,9 @@ private fun CharacterContentPreview(
     @PreviewParameter(CharacterStateParameterProvider::class) state: CharacterState,
 ) {
     MaterialTheme {
-        CharacterContent(state)
+        CharacterContent(
+            state = state,
+            onCharacterClick = {}
+        )
     }
 }

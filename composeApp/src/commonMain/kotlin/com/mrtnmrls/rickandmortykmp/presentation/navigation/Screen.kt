@@ -4,6 +4,9 @@ import kotlinx.serialization.Serializable
 
 sealed class Screen {
     @Serializable
+    object Home: Screen()
+
+    @Serializable
     object Characters: Screen()
 
     @Serializable
@@ -11,4 +14,9 @@ sealed class Screen {
 
     @Serializable
     object Episodes: Screen()
+
+    @Serializable
+    data class CharactersDetail(
+        val id: Int
+    ): Screen()
 }
