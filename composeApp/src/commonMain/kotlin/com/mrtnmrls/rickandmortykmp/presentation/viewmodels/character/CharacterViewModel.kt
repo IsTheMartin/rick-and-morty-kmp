@@ -19,18 +19,43 @@ class CharacterViewModel(
     }
 
     private fun getCharacters() = intent {
-        reduce { state.copy(isLoading = true) }
-        val characters = characterRepository.getCharacters(1)
-        reduce {
-            state.copy(
-                isLoading = false,
-                characters = characters
-            )
+        if (state.isLoading || !state.canLoadMore || state.isLoadingNextPage) return@intent
+
+        if (state.characters.isEmpty()) {
+            reduce { state.copy(isLoading = true) }
+        } else {
+            reduce { state.copy(isLoadingNextPage = true) }
+        }
+
+        try {
+            val result = characterRepository.getCharacters(state.page)
+            reduce {
+                state.copy(
+                    isLoading = false,
+                    isLoadingNextPage = false,
+                    characters = state.characters + result.characters,
+                    canLoadMore = result.canLoadMore,
+                    page = state.page + 1
+                )
+            }
+        } catch (e: Exception) {
+            println(e.toString())
+            reduce {
+                state.copy(
+                    isLoading = false,
+                    isLoadingNextPage = false,
+                    page = state.page + 1
+                )
+            }
         }
     }
 
     fun onCharacterClicked(id: Int) = intent {
         postSideEffect(CharacterSideEffect.NavigateToCharacterDetail(id))
+    }
+
+    fun loadNextPage() = intent {
+        getCharacters()
     }
 
 }
