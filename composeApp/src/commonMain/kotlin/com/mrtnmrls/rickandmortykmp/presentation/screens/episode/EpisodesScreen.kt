@@ -52,6 +52,16 @@ private fun EpisodeContent(state: EpisodeState) {
                 modifier = Modifier.align(Alignment.Center)
             )
         }
+
+        state.errorMessage?.let { message ->
+            Text(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(12.dp)
+                    .align(Alignment.Center),
+                text = message
+            )
+        }
+
         if (state.episodes.isNotEmpty()) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize()

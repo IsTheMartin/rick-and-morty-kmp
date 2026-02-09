@@ -27,13 +27,25 @@ class CharacterDetailViewModel(
 
     private fun getCharacter() = intent {
         reduce { state.copy(isLoading = true) }
-        val character = characterRepository.getCharacter(characterId)
-        reduce {
-            state.copy(
-                isLoading = false,
-                character = character
-            )
-        }
+        characterRepository.getCharacter(characterId)
+            .onSuccess { character ->
+                reduce {
+                    state.copy(
+                        isLoading = false,
+                        character = character,
+                        error = null
+                    )
+                }
+            }
+            .onFailure { error ->
+                reduce {
+                    state.copy(
+                        isLoading = false,
+                        error = error.message
+                    )
+                }
+            }
+
     }
 
     fun navigateBack() = intent {

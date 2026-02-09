@@ -41,6 +41,7 @@ import coil3.compose.AsyncImage
 import com.mrtnmrls.rickandmortykmp.domain.model.Character
 import com.mrtnmrls.rickandmortykmp.presentation.navigation.LocalNavController
 import com.mrtnmrls.rickandmortykmp.presentation.navigation.Screen
+import com.mrtnmrls.rickandmortykmp.presentation.navigation.Screen.*
 import com.mrtnmrls.rickandmortykmp.presentation.screens.character.preview.CharacterStateParameterProvider
 import com.mrtnmrls.rickandmortykmp.presentation.utils.statusColor
 import com.mrtnmrls.rickandmortykmp.presentation.viewmodels.character.CharacterSideEffect
@@ -50,7 +51,9 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
-fun CharactersScreen() {
+fun CharactersScreen(
+    showSnackBar: (String) -> Unit
+) {
     val viewModel = koinViewModel<CharacterViewModel>()
     val state = viewModel.container.stateFlow.collectAsStateWithLifecycle().value
     val navController = LocalNavController.current
@@ -58,7 +61,11 @@ fun CharactersScreen() {
     viewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             is CharacterSideEffect.NavigateToCharacterDetail -> {
-                navController.navigate(Screen.CharactersDetail(sideEffect.id))
+                navController.navigate(CharactersDetail(sideEffect.id))
+            }
+
+            is CharacterSideEffect.ShowSnackBar -> {
+                showSnackBar(sideEffect.message)
             }
         }
     }
@@ -99,6 +106,14 @@ private fun CharacterContent(
         if (state.isLoading) {
             CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center)
+            )
+        }
+        state.errorMessage?.let { message ->
+            Text(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(12.dp)
+                    .align(Alignment.Center),
+                text = message
             )
         }
         if (state.characters.isNotEmpty()) {

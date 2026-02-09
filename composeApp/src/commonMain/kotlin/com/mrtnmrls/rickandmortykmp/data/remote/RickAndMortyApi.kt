@@ -7,46 +7,64 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
-import io.ktor.http.parameters
+import io.ktor.client.statement.HttpResponse
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.withContext
 
 class RickAndMortyApi(
     private val httpClient: HttpClient
 ) {
     suspend fun getCharacters(
         page: Int
-    ): CharacterResponse {
-        return httpClient
-            .get("character") {
+    ): Result<CharacterResponse> {
+        return safeApiCall {
+            httpClient.get("character") {
                 parameter("page", page)
             }
-            .body()
+        }
     }
 
     suspend fun getCharacter(
         id: Int
-    ): CharacterResponse.CharacterData {
-        return httpClient
-            .get("character/$id")
-            .body()
+    ): Result<CharacterResponse.CharacterData> {
+        return safeApiCall {
+            httpClient
+                .get("character/$id")
+        }
     }
 
     suspend fun getLocations(
         page: Int
-    ): LocationResponse {
-        return httpClient
-            .get("location") {
-                parameter("page", page)
-            }
-            .body()
+    ): Result<LocationResponse> {
+        return safeApiCall {
+            httpClient
+                .get("location") {
+                    parameter("page", page)
+                }
+        }
     }
 
     suspend fun getEpisodes(
         page: Int
-    ): EpisodeResponse {
-        return httpClient
-            .get("episode") {
-                parameter("page", page)
+    ): Result<EpisodeResponse> {
+        return safeApiCall {
+            httpClient
+                .get("episode") {
+                    parameter("page", page)
+                }
+        }
+    }
+
+    suspend inline fun <reified T> safeApiCall(crossinline body: suspend () -> HttpResponse): Result<T> {
+        return runCatching {
+            withContext(Dispatchers.IO) {
+                val response = body()
+                if (response.status.value == 429) {
+                    throw Exception("Too many requests in server, please wait a few seconds.")
+                }
+                response.body<T>()
             }
-            .body()
+        }
     }
 }

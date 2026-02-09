@@ -27,8 +27,7 @@ class CharacterViewModel(
             reduce { state.copy(isLoadingNextPage = true) }
         }
 
-        try {
-            val result = characterRepository.getCharacters(state.page)
+        characterRepository.getCharacters(state.page).onSuccess { result ->
             reduce {
                 state.copy(
                     isLoading = false,
@@ -38,16 +37,28 @@ class CharacterViewModel(
                     page = state.page + 1
                 )
             }
-        } catch (e: Exception) {
-            println(e.toString())
-            reduce {
-                state.copy(
-                    isLoading = false,
-                    isLoadingNextPage = false,
-                    page = state.page + 1
-                )
-            }
         }
+            .onFailure { error ->
+                if (state.characters.isEmpty()) {
+                    reduce {
+                        state.copy(
+                            isLoading = false,
+                            isLoadingNextPage = false,
+                            errorMessage = error.message
+                        )
+                    }
+                }
+                else {
+                    reduce {
+                        state.copy(
+                            isLoading = false,
+                            isLoadingNextPage = false
+                        )
+                    }
+                    postSideEffect(CharacterSideEffect.ShowSnackBar(error.message ?: "An error happened"))
+                }
+            }
+
     }
 
     fun onCharacterClicked(id: Int) = intent {

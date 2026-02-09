@@ -7,8 +7,11 @@ import com.mrtnmrls.rickandmortykmp.domain.repository.LocationRepository
 
 class LocationRepositoryImpl(
     private val api: RickAndMortyApi
-): LocationRepository {
-    override suspend fun getLocation(page: Int): List<Location> {
-        return api.getLocations(page).results.map { it.toLocation() }
+) : LocationRepository {
+    override suspend fun getLocation(page: Int): Result<List<Location>> {
+        return api.getLocations(page)
+            .map { response ->
+                response.results.map { result -> result.toLocation() }
+            }
     }
 }

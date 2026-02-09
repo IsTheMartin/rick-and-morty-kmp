@@ -9,7 +9,7 @@ import org.orbitmvi.orbit.container
 
 class EpisodeViewModel(
     private val episodeRepository: EpisodeRepository
-): ViewModel(), ContainerHost<EpisodeState, EpisodeSideEffect> {
+) : ViewModel(), ContainerHost<EpisodeState, EpisodeSideEffect> {
 
     override val container: Container<EpisodeState, EpisodeSideEffect> =
         viewModelScope.container(EpisodeState())
@@ -20,12 +20,21 @@ class EpisodeViewModel(
 
     private fun getEpisodes() = intent {
         reduce { state.copy(isLoading = true) }
-        val episodes = episodeRepository.getEpisodes(1)
-        reduce {
-            state.copy(
-                isLoading = false,
-                episodes = episodes
-            )
-        }
+        episodeRepository.getEpisodes(1)
+            .onSuccess { episodes ->
+                reduce {
+                    state.copy(
+                        isLoading = false,
+                        episodes = episodes,
+                        errorMessage = null
+                    )
+                }
+            }
+            .onFailure { error ->
+                state.copy(
+                    isLoading = false,
+                    errorMessage = error.message
+                )
+            }
     }
 }

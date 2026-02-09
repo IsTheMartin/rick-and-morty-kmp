@@ -7,7 +7,7 @@ import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.container
 
-class LocationViewModel (
+class LocationViewModel(
     private val locationRepository: LocationRepository
 ) : ViewModel(), ContainerHost<LocationState, LocationSideEffect> {
 
@@ -20,13 +20,23 @@ class LocationViewModel (
 
     private fun getLocations() = intent {
         reduce { state.copy(isLoading = true) }
-        val locations = locationRepository.getLocation(1)
-        reduce {
-            state.copy(
-                isLoading = false,
-                locations = locations
-            )
-        }
+        locationRepository.getLocation(1)
+            .onSuccess { locations ->
+                reduce {
+                    state.copy(
+                        isLoading = false,
+                        locations = locations,
+                        errorMessage = null
+                    )
+                }
+            }
+            .onFailure { error ->
+                reduce {
+                    state.copy(
+                        isLoading = false,
+                        errorMessage = error.message
+                    )
+                }
+            }
     }
-
 }

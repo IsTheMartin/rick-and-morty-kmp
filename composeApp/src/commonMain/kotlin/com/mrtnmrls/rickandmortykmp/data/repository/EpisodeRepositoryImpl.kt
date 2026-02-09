@@ -7,8 +7,12 @@ import com.mrtnmrls.rickandmortykmp.domain.repository.EpisodeRepository
 
 class EpisodeRepositoryImpl(
     private val api: RickAndMortyApi
-): EpisodeRepository {
-    override suspend fun getEpisodes(page: Int): List<Episode> {
-        return api.getEpisodes(page).results.map { it.toEpisode() }
+) : EpisodeRepository {
+    override suspend fun getEpisodes(page: Int): Result<List<Episode>> {
+        return api.getEpisodes(page)
+            .map { response ->
+                response.results
+                    .map { result -> result.toEpisode() }
+            }
     }
 }

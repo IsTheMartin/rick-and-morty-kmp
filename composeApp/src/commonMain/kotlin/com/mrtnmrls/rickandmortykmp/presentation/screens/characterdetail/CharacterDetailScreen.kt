@@ -53,8 +53,14 @@ import com.mrtnmrls.rickandmortykmp.presentation.utils.statusColor
 import com.mrtnmrls.rickandmortykmp.presentation.viewmodels.characterdetail.CharacterDetailSideEffect
 import com.mrtnmrls.rickandmortykmp.presentation.viewmodels.characterdetail.CharacterDetailState
 import com.mrtnmrls.rickandmortykmp.presentation.viewmodels.characterdetail.CharacterDetailViewModel
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.orbitmvi.orbit.compose.collectSideEffect
+import rick_and_morty_kmp.composeapp.generated.resources.Res
+import rick_and_morty_kmp.composeapp.generated.resources.character_detail_screen_back
+import rick_and_morty_kmp.composeapp.generated.resources.character_detail_screen_gender
+import rick_and_morty_kmp.composeapp.generated.resources.character_detail_screen_location
+import rick_and_morty_kmp.composeapp.generated.resources.character_detail_screen_species
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -101,6 +107,16 @@ private fun CharacterDetailContent(
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
+
+            state.error?.let { message ->
+                Text(
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(12.dp)
+                        .align(Alignment.Center),
+                    text = message
+                )
+            }
+
             state.character?.let { character ->
                 CharacterDetail(character)
             }
@@ -127,7 +143,7 @@ private fun CharacterDetailTopBar(
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                    contentDescription = "Back"
+                    contentDescription = stringResource(Res.string.character_detail_screen_back)
                 )
             }
         },
@@ -204,19 +220,19 @@ private fun CharacterDetail(character: Character) {
         ) {
             InfoCard(
                 icon = Icons.Default.Transgender,
-                title = "Gender",
+                title = stringResource(Res.string.character_detail_screen_gender),
                 description = character.gender
             )
 
             InfoCard(
                 icon = Icons.Default.Person,
-                title = "Species",
+                title = stringResource(Res.string.character_detail_screen_species),
                 description = character.species
             )
 
             InfoCard(
                 icon = Icons.Default.LocationOn,
-                title = "Last known location",
+                title = stringResource(Res.string.character_detail_screen_location),
                 description = character.location
             )
         }
