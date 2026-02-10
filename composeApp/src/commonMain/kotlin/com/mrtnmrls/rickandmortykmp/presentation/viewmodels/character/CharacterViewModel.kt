@@ -12,11 +12,12 @@ class CharacterViewModel(
 ) : ViewModel(), ContainerHost<CharacterState, CharacterSideEffect> {
 
     override val container: Container<CharacterState, CharacterSideEffect> =
-        viewModelScope.container(CharacterState())
-
-    init {
-        getCharacters()
-    }
+        viewModelScope.container(
+            initialState = CharacterState(),
+            onCreate = {
+                getCharacters()
+            }
+        )
 
     private fun getCharacters() = intent {
         if (state.isLoading || !state.canLoadMore || state.isLoadingNextPage) return@intent

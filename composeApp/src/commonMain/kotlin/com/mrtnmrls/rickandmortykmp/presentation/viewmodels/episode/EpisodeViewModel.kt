@@ -12,11 +12,12 @@ class EpisodeViewModel(
 ) : ViewModel(), ContainerHost<EpisodeState, EpisodeSideEffect> {
 
     override val container: Container<EpisodeState, EpisodeSideEffect> =
-        viewModelScope.container(EpisodeState())
-
-    init {
-        getEpisodes()
-    }
+        viewModelScope.container(
+            initialState = EpisodeState(),
+            onCreate = {
+                getEpisodes()
+            }
+        )
 
     private fun getEpisodes() = intent {
         reduce { state.copy(isLoading = true) }
@@ -31,10 +32,12 @@ class EpisodeViewModel(
                 }
             }
             .onFailure { error ->
-                state.copy(
-                    isLoading = false,
-                    errorMessage = error.message
-                )
+                reduce {
+                    state.copy(
+                        isLoading = false,
+                        errorMessage = error.message
+                    )
+                }
             }
     }
 }
