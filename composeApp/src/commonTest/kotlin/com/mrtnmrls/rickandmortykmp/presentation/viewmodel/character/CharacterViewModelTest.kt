@@ -8,7 +8,6 @@ import com.mrtnmrls.rickandmortykmp.presentation.viewmodels.character.CharacterS
 import com.mrtnmrls.rickandmortykmp.presentation.viewmodels.character.CharacterState
 import com.mrtnmrls.rickandmortykmp.presentation.viewmodels.character.CharacterViewModel
 import kotlinx.coroutines.test.runTest
-import org.orbitmvi.orbit.container
 import org.orbitmvi.orbit.test.test
 import kotlin.test.Test
 
@@ -77,6 +76,31 @@ class CharacterViewModelTest {
     }
 
     @Test
+    fun `cannot load next page`() = runTest {
+        val characters = listOf(TestData.characterData.toCharacter())
+        val paging = CharacterPaging(characters, false)
+        repository.charactersResult = Result.success(paging)
+
+        viewModel.test(this, CharacterState()) {
+            runOnCreate()
+            expectState {
+                copy(isLoading = true)
+            }
+            expectState {
+                copy(
+                    isLoading = false,
+                    characters = characters,
+                    canLoadMore = false,
+                    page = 2,
+                    errorMessage = null
+                )
+            }
+            viewModel.loadNextPage()
+            expectNoItems()
+        }
+    }
+
+    @Test
     fun `initial load fails`() = runTest {
         val errorMessage = "Network error"
         repository.charactersResult = Result.failure(Exception(errorMessage))
@@ -92,6 +116,71 @@ class CharacterViewModelTest {
                     errorMessage = errorMessage
                 )
             }
+        }
+    }
+
+    @Test
+    fun `load next page is error`() = runTest {
+        val characters = listOf(TestData.characterData.toCharacter())
+        val paging = CharacterPaging(characters, true)
+        val errorMessage = "Network error"
+        repository.charactersResult = Result.success(paging)
+
+        viewModel.test(this, CharacterState()) {
+            runOnCreate()
+            expectState {
+                copy(isLoading = true)
+            }
+            expectState {
+                copy(
+                    isLoading = false,
+                    characters = characters,
+                    canLoadMore = true,
+                    page = 2,
+                    errorMessage = null
+                )
+            }
+            repository.charactersResult = Result.failure(Exception(errorMessage))
+            viewModel.loadNextPage()
+            expectState {
+                copy(isLoadingNextPage = true)
+            }
+            expectState {
+                copy(isLoadingNextPage = false)
+            }
+            expectSideEffect(CharacterSideEffect.ShowSnackBar(errorMessage))
+        }
+    }
+
+    @Test
+    fun `load next page is error with null exception`() = runTest {
+        val characters = listOf(TestData.characterData.toCharacter())
+        val paging = CharacterPaging(characters, true)
+        repository.charactersResult = Result.success(paging)
+
+        viewModel.test(this, CharacterState()) {
+            runOnCreate()
+            expectState {
+                copy(isLoading = true)
+            }
+            expectState {
+                copy(
+                    isLoading = false,
+                    characters = characters,
+                    canLoadMore = true,
+                    page = 2,
+                    errorMessage = null
+                )
+            }
+            repository.charactersResult = Result.failure(Exception())
+            viewModel.loadNextPage()
+            expectState {
+                copy(isLoadingNextPage = true)
+            }
+            expectState {
+                copy(isLoadingNextPage = false)
+            }
+            expectSideEffect(CharacterSideEffect.ShowSnackBar("An error happened"))
         }
     }
 

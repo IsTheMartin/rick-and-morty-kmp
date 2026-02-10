@@ -49,6 +49,7 @@ import coil3.compose.AsyncImage
 import com.mrtnmrls.rickandmortykmp.domain.model.Character
 import com.mrtnmrls.rickandmortykmp.presentation.navigation.LocalNavController
 import com.mrtnmrls.rickandmortykmp.presentation.screens.character.preview.CharacterStateParameterProvider
+import com.mrtnmrls.rickandmortykmp.presentation.screens.characterdetail.preview.CharacterDetailStateParameterProvider
 import com.mrtnmrls.rickandmortykmp.presentation.utils.statusColor
 import com.mrtnmrls.rickandmortykmp.presentation.viewmodels.characterdetail.CharacterDetailSideEffect
 import com.mrtnmrls.rickandmortykmp.presentation.viewmodels.characterdetail.CharacterDetailState
@@ -287,7 +288,7 @@ private fun InfoCard(
 @Preview
 @Composable
 private fun CharacterDetailScreenPreview(
-    @PreviewParameter(CharacterStateParameterProvider::class) state: CharacterDetailState
+    @PreviewParameter(CharacterDetailStateParameterProvider::class) state: CharacterDetailState
 ) {
     MaterialTheme {
         Surface {

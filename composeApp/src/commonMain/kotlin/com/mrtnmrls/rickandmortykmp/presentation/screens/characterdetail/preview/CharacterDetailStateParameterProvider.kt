@@ -10,7 +10,7 @@ class CharacterDetailStateParameterProvider: PreviewParameterProvider<CharacterD
     override val values: Sequence<CharacterDetailState> = sequenceOf(
         CharacterDetailState(
             isLoading = true,
-            character = null
+            character = null,
         ),
         CharacterDetailState(
             isLoading = false,
@@ -18,12 +18,17 @@ class CharacterDetailStateParameterProvider: PreviewParameterProvider<CharacterD
                 id = 1,
                 name = "Rick Sanchez",
                 status = "Alive",
-                species = "Human",
+                species = "Humano",
                 type = "",
                 gender = "Male",
                 location = "Earth",
-                image = ""
-            )
-        )
+                image = "",
+            ),
+        ),
+        CharacterDetailState(
+            isLoading = false,
+            character = null,
+            error = "An error happened",
+        ),
     )
 }
