@@ -1,5 +1,6 @@
 package com.mrtnmrls.rickandmortykmp.di
 
+import com.mrtnmrls.rickandmortykmp.data.remote.impl.RickAndMortyApiImpl
 import com.mrtnmrls.rickandmortykmp.data.remote.RickAndMortyApi
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -25,5 +26,5 @@ val networkModule = module {
         }
     }
 
-    single { RickAndMortyApi(get()) }
+    single<RickAndMortyApi> { RickAndMortyApiImpl(get()) }
 }

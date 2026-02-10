@@ -1,7 +1,5 @@
 package com.mrtnmrls.rickandmortykmp.domain.model
 
-import com.mrtnmrls.rickandmortykmp.data.model.CharacterResponse.LocationData
-
 data class Character(
     val id: Int,
     val name: String,

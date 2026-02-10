@@ -21,11 +21,11 @@ data class CharacterResponse(
         val episode: List<String>,
         val url: String,
         val created: String
-    )
-
-    @Serializable
-    data class LocationData(
-        val name: String,
-        val url: String
-    )
+    ) {
+        @Serializable
+        data class LocationData(
+            val name: String,
+            val url: String
+        )
+    }
 }
