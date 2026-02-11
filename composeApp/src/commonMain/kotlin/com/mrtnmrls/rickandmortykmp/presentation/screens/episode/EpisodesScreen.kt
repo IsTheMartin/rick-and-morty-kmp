@@ -37,7 +37,9 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun EpisodesScreen() {
     val viewModel = koinViewModel<EpisodeViewModel>()
-    val state = viewModel.container.stateFlow.collectAsStateWithLifecycle().value
+    val state = viewModel.container.stateFlow
+        .collectAsStateWithLifecycle()
+        .value
 
     EpisodeContent(state)
 }
@@ -45,30 +47,31 @@ fun EpisodesScreen() {
 @Composable
 private fun EpisodeContent(state: EpisodeState) {
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
     ) {
         if (state.isLoading) {
             CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.Center)
+                modifier = Modifier.align(Alignment.Center),
             )
         }
 
         state.errorMessage?.let { message ->
             Text(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(12.dp)
                     .align(Alignment.Center),
-                text = message
+                text = message,
             )
         }
 
         if (state.episodes.isNotEmpty()) {
             LazyColumn(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             ) {
                 state.episodePerSeason.forEach { (season, episodes) ->
                     item {
-                        val seasonHeader = when(season) {
+                        val seasonHeader = when (season) {
                             "S01" -> "Season 1"
                             "S02" -> "Season 2"
                             "S03" -> "Season 3"
@@ -83,7 +86,7 @@ private fun EpisodeContent(state: EpisodeState) {
                             color = MaterialTheme.colorScheme.primary,
                             fontSize = 22.sp,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(16.dp)
+                            modifier = Modifier.padding(16.dp),
                         )
                     }
                     items(items = episodes, key = { it.id }) { episode ->
@@ -104,60 +107,60 @@ private fun EpisodeItem(episode: Episode) {
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        )
+            containerColor = Color.White,
+        ),
     ) {
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
             Text(
                 text = episode.name,
                 style = MaterialTheme.typography.titleMedium.copy(
                     color = Color.Black,
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                    fontWeight = FontWeight.Bold,
+                ),
             )
             Text(
                 text = buildAnnotatedString {
                     withStyle(
                         style = SpanStyle(
                             color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.SemiBold
-                        )
+                            fontWeight = FontWeight.SemiBold,
+                        ),
                     ) {
                         append("Episode: ")
                     }
                     withStyle(
                         style = SpanStyle(
                             color = Color.DarkGray,
-                        )
+                        ),
                     ) {
                         append(episode.episode)
                     }
-                }
-
+                },
             )
             Text(
                 text = buildAnnotatedString {
                     withStyle(
                         style = SpanStyle(
                             color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.SemiBold
-                        )
+                            fontWeight = FontWeight.SemiBold,
+                        ),
                     ) {
                         append("Air date: ")
                     }
                     withStyle(
                         style = SpanStyle(
                             color = Color.DarkGray,
-                        )
+                        ),
                     ) {
                         append(episode.airDate)
                     }
-                }
+                },
             )
         }
     }
@@ -166,7 +169,7 @@ private fun EpisodeItem(episode: Episode) {
 @Preview
 @Composable
 private fun EpisodeContentPreview(
-    @PreviewParameter(EpisodeStateParameterProvider::class) state: EpisodeState
+    @PreviewParameter(EpisodeStateParameterProvider::class) state: EpisodeState,
 ) {
     MaterialTheme {
         Surface {

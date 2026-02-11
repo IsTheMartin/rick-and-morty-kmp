@@ -8,36 +8,37 @@ import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.container
 
 class EpisodeViewModel(
-    private val episodeRepository: EpisodeRepository
-) : ViewModel(), ContainerHost<EpisodeState, EpisodeSideEffect> {
-
+    private val episodeRepository: EpisodeRepository,
+) : ViewModel(),
+    ContainerHost<EpisodeState, EpisodeSideEffect> {
     override val container: Container<EpisodeState, EpisodeSideEffect> =
         viewModelScope.container(
             initialState = EpisodeState(),
             onCreate = {
                 getEpisodes()
-            }
+            },
         )
 
-    private fun getEpisodes() = intent {
-        reduce { state.copy(isLoading = true) }
-        episodeRepository.getEpisodes(1)
-            .onSuccess { episodes ->
-                reduce {
-                    state.copy(
-                        isLoading = false,
-                        episodes = episodes,
-                        errorMessage = null
-                    )
+    private fun getEpisodes() =
+        intent {
+            reduce { state.copy(isLoading = true) }
+            episodeRepository
+                .getEpisodes(1)
+                .onSuccess { episodes ->
+                    reduce {
+                        state.copy(
+                            isLoading = false,
+                            episodes = episodes,
+                            errorMessage = null,
+                        )
+                    }
+                }.onFailure { error ->
+                    reduce {
+                        state.copy(
+                            isLoading = false,
+                            errorMessage = error.message,
+                        )
+                    }
                 }
-            }
-            .onFailure { error ->
-                reduce {
-                    state.copy(
-                        isLoading = false,
-                        errorMessage = error.message
-                    )
-                }
-            }
-    }
+        }
 }

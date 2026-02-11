@@ -6,13 +6,13 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class EpisodeResponse(
     val info: InfoResponse,
-    val results: List<EpisodeData>
+    val results: List<EpisodeData>,
 ) {
     @Serializable
     data class EpisodeData(
         val id: Int,
         val name: String,
         @SerialName("air_date") val airDate: String,
-        val episode: String
+        val episode: String,
     )
 }

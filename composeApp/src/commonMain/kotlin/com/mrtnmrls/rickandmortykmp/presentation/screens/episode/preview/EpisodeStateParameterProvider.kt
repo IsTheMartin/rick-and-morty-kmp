@@ -4,11 +4,11 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.mrtnmrls.rickandmortykmp.domain.model.Episode
 import com.mrtnmrls.rickandmortykmp.presentation.viewmodels.episode.EpisodeState
 
-class EpisodeStateParameterProvider: PreviewParameterProvider<EpisodeState> {
+class EpisodeStateParameterProvider : PreviewParameterProvider<EpisodeState> {
     override val values: Sequence<EpisodeState> = sequenceOf(
         EpisodeState(
             isLoading = true,
-            episodes = emptyList()
+            episodes = emptyList(),
         ),
         EpisodeState(
             isLoading = false,
@@ -17,15 +17,15 @@ class EpisodeStateParameterProvider: PreviewParameterProvider<EpisodeState> {
                     id = 1,
                     name = "Pilot",
                     airDate = "2026-01-01",
-                    episode = "S01E01"
+                    episode = "S01E01",
                 ),
                 Episode(
                     id = 2,
                     name = "Co-Pilot",
                     airDate = "2026-01-02",
-                    episode = "S02E02"
-                )
-            )
-        )
+                    episode = "S02E02",
+                ),
+            ),
+        ),
     )
 }

@@ -15,51 +15,39 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 
 class RickAndMortyApiImpl(
-    private val httpClient: HttpClient
-): RickAndMortyApi {
-    override suspend fun getCharacters(
-        page: Int
-    ): Result<CharacterResponse> {
-        return safeApiCall {
+    private val httpClient: HttpClient,
+) : RickAndMortyApi {
+    override suspend fun getCharacters(page: Int): Result<CharacterResponse> =
+        safeApiCall {
             httpClient.get("character") {
                 parameter("page", page)
             }
         }
-    }
 
-    override suspend fun getCharacter(
-        id: Int
-    ): Result<CharacterResponse.CharacterData> {
-        return safeApiCall {
+    override suspend fun getCharacter(id: Int): Result<CharacterResponse.CharacterData> =
+        safeApiCall {
             httpClient
                 .get("character/$id")
         }
-    }
 
-    override suspend fun getLocations(
-        page: Int
-    ): Result<LocationResponse> {
-        return safeApiCall {
+    override suspend fun getLocations(page: Int): Result<LocationResponse> =
+        safeApiCall {
             httpClient
                 .get("location") {
                     parameter("page", page)
                 }
         }
-    }
 
-    override suspend fun getEpisodes(
-        page: Int
-    ): Result<EpisodeResponse> {
-        return safeApiCall {
+    override suspend fun getEpisodes(page: Int): Result<EpisodeResponse> =
+        safeApiCall {
             httpClient
                 .get("episode") {
                     parameter("page", page)
                 }
         }
-    }
 
-    suspend inline fun <reified T> safeApiCall(crossinline body: suspend () -> HttpResponse): Result<T> {
-        return runCatching {
+    suspend inline fun <reified T> safeApiCall(crossinline body: suspend () -> HttpResponse): Result<T> =
+        runCatching {
             withContext(Dispatchers.IO) {
                 val response = body()
                 if (response.status == HttpStatusCode.Companion.TooManyRequests) {
@@ -71,7 +59,6 @@ class RickAndMortyApiImpl(
                 response.body<T>()
             }
         }
-    }
 
     companion object {
         const val TOO_MANY_REQUEST_MESSAGE = "Too many requests in server, please wait a few seconds."

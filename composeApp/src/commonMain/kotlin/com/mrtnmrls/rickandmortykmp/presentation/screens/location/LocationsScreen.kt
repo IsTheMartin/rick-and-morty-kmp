@@ -39,7 +39,9 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun LocationsScreen() {
     val viewModel = koinViewModel<LocationViewModel>()
-    val state = viewModel.container.stateFlow.collectAsStateWithLifecycle().value
+    val state = viewModel.container.stateFlow
+        .collectAsStateWithLifecycle()
+        .value
 
     LocationContent(state)
 }
@@ -47,21 +49,23 @@ fun LocationsScreen() {
 @Composable
 private fun LocationContent(state: LocationState) {
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .background(Color.White),
     ) {
         if (state.isLoading) {
             CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.Center)
+                modifier = Modifier.align(Alignment.Center),
             )
         }
 
         state.errorMessage?.let { message ->
             Text(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(12.dp)
                     .align(Alignment.Center),
-                text = message
+                text = message,
             )
         }
 
@@ -69,11 +73,11 @@ private fun LocationContent(state: LocationState) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 items(
                     items = state.locations,
-                    key = { it.id }
+                    key = { it.id },
                 ) { character ->
                     LocationItem(character)
                 }
@@ -83,74 +87,84 @@ private fun LocationContent(state: LocationState) {
 }
 
 @Composable
-fun LocationItem(location: Location) {
+fun LocationItem(
+    location: Location,
+    modifier: Modifier = Modifier,
+) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(4.dp),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        )
+            containerColor = Color.White,
+        ),
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth()
-                .padding(16.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
         ) {
             Text(
                 text = location.name,
                 style = MaterialTheme.typography.titleMedium.copy(
                     color = Color.Black,
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                    fontWeight = FontWeight.Bold,
+                ),
             )
 
             Row(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(horizontal = 6.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 Text(
                     text = buildAnnotatedString {
-                        withStyle(style = SpanStyle(
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.SemiBold
-                        )) {
+                        withStyle(
+                            style = SpanStyle(
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.SemiBold,
+                            ),
+                        ) {
                             append("Type: ")
                         }
-                        withStyle(style = SpanStyle(
-                            color = Color.DarkGray,
-                        )) {
+                        withStyle(
+                            style = SpanStyle(
+                                color = Color.DarkGray,
+                            ),
+                        ) {
                             append(location.type)
                         }
-                    }
+                    },
                 )
             }
 
             Row(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(horizontal = 6.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 Text(
                     text = "Dimension: ",
                     style = MaterialTheme.typography.titleMedium.copy(
                         color = MaterialTheme.colorScheme.primary,
                         fontSize = 14.sp,
-                        fontWeight = FontWeight.Normal
-                    )
+                        fontWeight = FontWeight.Normal,
+                    ),
                 )
                 Text(
                     text = location.dimension,
                     style = MaterialTheme.typography.titleMedium.copy(
                         color = Color.DarkGray,
                         fontSize = 14.sp,
-                        fontWeight = FontWeight.Normal
-                    )
+                        fontWeight = FontWeight.Normal,
+                    ),
                 )
             }
         }
@@ -160,7 +174,7 @@ fun LocationItem(location: Location) {
 @Preview
 @Composable
 private fun LocationsScreenPreview(
-    @PreviewParameter(LocationStateParameterProvider::class) state: LocationState
+    @PreviewParameter(LocationStateParameterProvider::class) state: LocationState,
 ) {
     MaterialTheme {
         LocationContent(state)

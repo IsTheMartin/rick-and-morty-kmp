@@ -5,5 +5,5 @@ import com.mrtnmrls.rickandmortykmp.domain.model.Location
 data class LocationState(
     val isLoading: Boolean = false,
     val locations: List<Location> = emptyList(),
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
 )

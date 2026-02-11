@@ -22,11 +22,11 @@ object TestData {
         gender = "Male",
         origin = CharacterResponse.CharacterData.LocationData(
             name = "Earth",
-            url = ""
+            url = "",
         ),
         location = CharacterResponse.CharacterData.LocationData(
             name = "Earth",
-            url = ""
+            url = "",
         ),
         image = "",
         episode = listOf(),
@@ -36,7 +36,7 @@ object TestData {
 
     val characterResponse = CharacterResponse(
         info = infoResponse,
-        results = listOf(characterData)
+        results = listOf(characterData),
     )
 
     val locationResponse = LocationResponse(
@@ -46,9 +46,9 @@ object TestData {
                 id = 1,
                 name = "Earth",
                 type = "Planet",
-                dimension = ""
-            )
-        )
+                dimension = "",
+            ),
+        ),
     )
 
     val episodeResponse = EpisodeResponse(
@@ -58,8 +58,8 @@ object TestData {
                 id = 1,
                 name = "Pilot",
                 airDate = "2026, 9 02",
-                episode = "S01E01"
-            )
-        )
+                episode = "S01E01",
+            ),
+        ),
     )
 }

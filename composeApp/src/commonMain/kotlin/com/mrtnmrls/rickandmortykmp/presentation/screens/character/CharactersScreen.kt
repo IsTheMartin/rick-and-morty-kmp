@@ -25,7 +25,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,8 +42,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.mrtnmrls.rickandmortykmp.domain.model.Character
 import com.mrtnmrls.rickandmortykmp.presentation.navigation.LocalNavController
-import com.mrtnmrls.rickandmortykmp.presentation.navigation.Screen
-import com.mrtnmrls.rickandmortykmp.presentation.navigation.Screen.*
+import com.mrtnmrls.rickandmortykmp.presentation.navigation.Screen.CharactersDetail
 import com.mrtnmrls.rickandmortykmp.presentation.screens.character.preview.CharacterStateParameterProvider
 import com.mrtnmrls.rickandmortykmp.presentation.utils.statusColor
 import com.mrtnmrls.rickandmortykmp.presentation.viewmodels.character.CharacterSideEffect
@@ -51,11 +52,11 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
-fun CharactersScreen(
-    showSnackBar: (String) -> Unit
-) {
+fun CharactersScreen(showSnackBar: (String) -> Unit) {
     val viewModel = koinViewModel<CharacterViewModel>()
-    val state = viewModel.container.stateFlow.collectAsStateWithLifecycle().value
+    val state = viewModel.container.stateFlow
+        .collectAsStateWithLifecycle()
+        .value
     val navController = LocalNavController.current
 
     viewModel.collectSideEffect { sideEffect ->
@@ -73,7 +74,7 @@ fun CharactersScreen(
     CharacterContent(
         state = state,
         onCharacterClick = viewModel::onCharacterClicked,
-        onLoadNextPage = viewModel::loadNextPage
+        onLoadNextPage = viewModel::loadNextPage,
     )
 }
 
@@ -81,8 +82,9 @@ fun CharactersScreen(
 private fun CharacterContent(
     state: CharacterState,
     onCharacterClick: (Int) -> Unit,
-    onLoadNextPage: () -> Unit
+    onLoadNextPage: () -> Unit,
 ) {
+    val latestOnLoadNextPage by rememberUpdatedState(onLoadNextPage)
     val listState = rememberLazyListState()
     val shouldLoadMore = remember {
         derivedStateOf {
@@ -95,25 +97,27 @@ private fun CharacterContent(
 
     LaunchedEffect(shouldLoadMore.value) {
         if (shouldLoadMore.value) {
-            onLoadNextPage()
+            latestOnLoadNextPage()
         }
     }
 
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .background(Color.White),
     ) {
         if (state.isLoading) {
             CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.Center)
+                modifier = Modifier.align(Alignment.Center),
             )
         }
         state.errorMessage?.let { message ->
             Text(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(12.dp)
                     .align(Alignment.Center),
-                text = message
+                text = message,
             )
         }
         if (state.characters.isNotEmpty()) {
@@ -121,24 +125,24 @@ private fun CharacterContent(
                 modifier = Modifier.fillMaxSize(),
                 state = listState,
                 contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 items(
                     items = state.characters,
-                    key = { it.id }
+                    key = { it.id },
                 ) { character ->
                     CharacterItem(
                         character = character,
-                        onClick = onCharacterClick
+                        onClick = onCharacterClick,
                     )
                 }
                 if (state.isLoadingNextPage) {
                     item {
                         Box(
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
                         ) {
                             CircularProgressIndicator(
-                                modifier = Modifier.align(Alignment.Center)
+                                modifier = Modifier.align(Alignment.Center),
                             )
                         }
                     }
@@ -151,7 +155,7 @@ private fun CharacterContent(
 @Composable
 private fun CharacterItem(
     character: Character,
-    onClick: (Int) -> Unit
+    onClick: (Int) -> Unit,
 ) {
     Card(
         modifier = Modifier
@@ -163,50 +167,56 @@ private fun CharacterItem(
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        )
+            containerColor = Color.White,
+        ),
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             AsyncImage(
                 model = character.image,
                 contentDescription = character.name,
-                modifier = Modifier.width(100.dp)
-                    .clip(androidx.compose.foundation.shape.RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop
+                modifier = Modifier
+                    .width(100.dp)
+                    .clip(
+                        androidx.compose.foundation.shape
+                            .RoundedCornerShape(8.dp),
+                    ),
+                contentScale = ContentScale.Crop,
             )
             Column(
-                modifier = Modifier.weight(1f)
-                    .padding(start = 8.dp)
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp),
             ) {
                 Text(
                     text = character.name,
                     style = MaterialTheme.typography.titleMedium.copy(
                         color = Color.Black,
                         fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                        fontWeight = FontWeight.Bold,
+                    ),
                 )
 
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Box(
                         modifier = Modifier
                             .size(8.dp)
                             .clip(CircleShape)
-                            .background(character.statusColor())
+                            .background(character.statusColor()),
                     )
                     Text(
                         text = "${character.status} - ${character.species}",
                         style = MaterialTheme.typography.bodySmall.copy(
-                            color = Color.DarkGray
+                            color = Color.DarkGray,
                         ),
-                        modifier = Modifier.padding(start = 4.dp)
+                        modifier = Modifier.padding(start = 4.dp),
                     )
                 }
 
@@ -214,9 +224,9 @@ private fun CharacterItem(
                     text = "Last known location",
                     style = MaterialTheme.typography.labelSmall.copy(
                         color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     ),
-                    modifier = Modifier.padding(top = 8.dp)
+                    modifier = Modifier.padding(top = 8.dp),
                 )
 
                 Text(
@@ -224,7 +234,7 @@ private fun CharacterItem(
                     style = MaterialTheme.typography.bodyMedium.copy(
                         color = MaterialTheme.colorScheme.onSurface,
                     ),
-                    maxLines = 1
+                    maxLines = 1,
                 )
             }
         }
@@ -240,7 +250,7 @@ private fun CharacterContentPreview(
         CharacterContent(
             state = state,
             onCharacterClick = {},
-            onLoadNextPage = {}
+            onLoadNextPage = {},
         )
     }
 }

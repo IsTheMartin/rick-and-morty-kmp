@@ -12,29 +12,31 @@ class LocationRepositoryImplTest {
     private val repository = LocationRepositoryImpl(api)
 
     @Test
-    fun `getCharacters return successful result`() = runTest {
-        api.locationsResult = Result.success(locationResponse)
+    fun `getCharacters return successful result`() =
+        runTest {
+            api.locationsResult = Result.success(locationResponse)
 
-        val result = repository.getLocation(1)
+            val result = repository.getLocation(1)
 
-        assertTrue(result.isSuccess)
-        result.onSuccess { paging ->
-            assertEquals(1, paging.size)
-            assertEquals("Earth", paging.first().name)
-            assertEquals("Planet", paging.first().type)
+            assertTrue(result.isSuccess)
+            result.onSuccess { paging ->
+                assertEquals(1, paging.size)
+                assertEquals("Earth", paging.first().name)
+                assertEquals("Planet", paging.first().type)
+            }
         }
-    }
 
     @Test
-    fun `getCharacters return failed when api fails`() = runTest {
-        val exception = Exception("Network error")
-        api.locationsResult = Result.failure(exception)
+    fun `getCharacters return failed when api fails`() =
+        runTest {
+            val exception = Exception("Network error")
+            api.locationsResult = Result.failure(exception)
 
-        val result = repository.getLocation(1)
+            val result = repository.getLocation(1)
 
-        assertTrue(result.isFailure)
-        result.onFailure { error ->
-            assertEquals(exception.message, error.message)
+            assertTrue(result.isFailure)
+            result.onFailure { error ->
+                assertEquals(exception.message, error.message)
+            }
         }
-    }
 }

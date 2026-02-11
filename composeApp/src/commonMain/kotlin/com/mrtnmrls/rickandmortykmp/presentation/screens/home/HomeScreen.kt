@@ -39,7 +39,7 @@ import rick_and_morty_kmp.composeapp.generated.resources.home_screen_episodes
 import rick_and_morty_kmp.composeapp.generated.resources.home_screen_locations
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -50,22 +50,22 @@ fun HomeScreen() {
         NavigationBarItemModel(
             icon = Icons.Default.Person,
             label = stringResource(Res.string.home_screen_characters),
-            route = Screen.Characters
+            route = Screen.Characters,
         ),
         NavigationBarItemModel(
             icon = Icons.Default.LocationOn,
             label = stringResource(Res.string.home_screen_locations),
-            route = Screen.Locations
+            route = Screen.Locations,
         ),
         NavigationBarItemModel(
             icon = Icons.Default.Movie,
             label = stringResource(Res.string.home_screen_episodes),
-            route = Screen.Episodes
-        )
+            route = Screen.Episodes,
+        ),
     )
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         containerColor = Color.White,
         snackbarHost = {
             SnackbarHost(snackBarHostState)
@@ -92,24 +92,24 @@ fun HomeScreen() {
                         icon = {
                             Icon(
                                 imageVector = item.icon,
-                                contentDescription = item.label
+                                contentDescription = item.label,
                             )
-                        }
+                        },
                     )
                 }
             }
-        }
+        },
     ) { paddingValues ->
         NavHost(
             navController = navController,
             startDestination = Screen.Characters,
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier.padding(paddingValues),
         ) {
             composable<Screen.Characters> {
                 CharactersScreen(
                     showSnackBar = { message ->
                         scope.launch { snackBarHostState.showSnackbar(message = message) }
-                    }
+                    },
                 )
             }
             composable<Screen.Locations> {

@@ -8,36 +8,37 @@ import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.container
 
 class LocationViewModel(
-    private val locationRepository: LocationRepository
-) : ViewModel(), ContainerHost<LocationState, LocationSideEffect> {
-
+    private val locationRepository: LocationRepository,
+) : ViewModel(),
+    ContainerHost<LocationState, LocationSideEffect> {
     override val container: Container<LocationState, LocationSideEffect> =
         viewModelScope.container(
             initialState = LocationState(),
             onCreate = {
                 getLocations()
-            }
+            },
         )
 
-    private fun getLocations() = intent {
-        reduce { state.copy(isLoading = true) }
-        locationRepository.getLocation(1)
-            .onSuccess { locations ->
-                reduce {
-                    state.copy(
-                        isLoading = false,
-                        locations = locations,
-                        errorMessage = null
-                    )
+    private fun getLocations() =
+        intent {
+            reduce { state.copy(isLoading = true) }
+            locationRepository
+                .getLocation(1)
+                .onSuccess { locations ->
+                    reduce {
+                        state.copy(
+                            isLoading = false,
+                            locations = locations,
+                            errorMessage = null,
+                        )
+                    }
+                }.onFailure { error ->
+                    reduce {
+                        state.copy(
+                            isLoading = false,
+                            errorMessage = error.message,
+                        )
+                    }
                 }
-            }
-            .onFailure { error ->
-                reduce {
-                    state.copy(
-                        isLoading = false,
-                        errorMessage = error.message
-                    )
-                }
-            }
-    }
+        }
 }

@@ -48,7 +48,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.mrtnmrls.rickandmortykmp.domain.model.Character
 import com.mrtnmrls.rickandmortykmp.presentation.navigation.LocalNavController
-import com.mrtnmrls.rickandmortykmp.presentation.screens.character.preview.CharacterStateParameterProvider
 import com.mrtnmrls.rickandmortykmp.presentation.screens.characterdetail.preview.CharacterDetailStateParameterProvider
 import com.mrtnmrls.rickandmortykmp.presentation.utils.statusColor
 import com.mrtnmrls.rickandmortykmp.presentation.viewmodels.characterdetail.CharacterDetailSideEffect
@@ -67,7 +66,9 @@ import rick_and_morty_kmp.composeapp.generated.resources.character_detail_screen
 @Composable
 fun CharacterDetailScreen() {
     val viewModel = koinViewModel<CharacterDetailViewModel>()
-    val state = viewModel.container.stateFlow.collectAsStateWithLifecycle().value
+    val state = viewModel.container.stateFlow
+        .collectAsStateWithLifecycle()
+        .value
     val navController = LocalNavController.current
 
     viewModel.collectSideEffect { sideEffect ->
@@ -78,43 +79,43 @@ fun CharacterDetailScreen() {
 
     CharacterDetailContent(
         state = state,
-        onNavigateBack = viewModel::navigateBack
+        onNavigateBack = viewModel::navigateBack,
     )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CharacterDetailContent(
     state: CharacterDetailState,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
 ) {
     Scaffold(
         topBar = {
             CharacterDetailTopBar(
                 characterName = state.character?.name.orEmpty(),
-                onNavigateBack = onNavigateBack
+                onNavigateBack = onNavigateBack,
             )
-        }
+        },
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(Color.White)
+                .background(Color.White),
         ) {
             if (state.isLoading) {
                 CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier.align(Alignment.Center),
                 )
             }
 
             state.error?.let { message ->
                 Text(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .padding(12.dp)
                         .align(Alignment.Center),
-                    text = message
+                    text = message,
                 )
             }
 
@@ -129,13 +130,13 @@ private fun CharacterDetailContent(
 @Composable
 private fun CharacterDetailTopBar(
     characterName: String,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
 ) {
     TopAppBar(
         title = {
             Text(
                 text = characterName,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
         },
         navigationIcon = {
@@ -144,13 +145,13 @@ private fun CharacterDetailTopBar(
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                    contentDescription = stringResource(Res.string.character_detail_screen_back)
+                    contentDescription = stringResource(Res.string.character_detail_screen_back),
                 )
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.White
-        )
+            containerColor = Color.White,
+        ),
     )
 }
 
@@ -164,13 +165,13 @@ private fun CharacterDetail(character: Character) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(350.dp)
+                .height(350.dp),
         ) {
             AsyncImage(
                 model = character.image,
                 contentDescription = character.name,
                 modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
             )
             Column(
                 modifier = Modifier
@@ -180,34 +181,33 @@ private fun CharacterDetail(character: Character) {
                         brush = Brush.verticalGradient(
                             colors = listOf(
                                 Color.Transparent,
-                                Color.Black
-                            )
-                        )
-                    )
-                    .padding(24.dp)
+                                Color.Black,
+                            ),
+                        ),
+                    ).padding(24.dp),
             ) {
                 Text(
                     text = character.name,
                     color = Color.White,
                     fontSize = 32.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
 
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Box(
                         modifier = Modifier
                             .size(14.dp)
                             .clip(CircleShape)
-                            .background(character.statusColor())
+                            .background(character.statusColor()),
                     )
                     Text(
                         text = "${character.status} - ${character.species}",
                         color = Color.White,
                         fontSize = 16.sp,
-                        modifier = Modifier.padding(start = 6.dp)
+                        modifier = Modifier.padding(start = 6.dp),
                     )
                 }
             }
@@ -217,24 +217,24 @@ private fun CharacterDetail(character: Character) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             InfoCard(
                 icon = Icons.Default.Transgender,
                 title = stringResource(Res.string.character_detail_screen_gender),
-                description = character.gender
+                description = character.gender,
             )
 
             InfoCard(
                 icon = Icons.Default.Person,
                 title = stringResource(Res.string.character_detail_screen_species),
-                description = character.species
+                description = character.species,
             )
 
             InfoCard(
                 icon = Icons.Default.LocationOn,
                 title = stringResource(Res.string.character_detail_screen_location),
-                description = character.location
+                description = character.location,
             )
         }
     }
@@ -244,41 +244,43 @@ private fun CharacterDetail(character: Character) {
 private fun InfoCard(
     icon: ImageVector,
     title: String,
-    description: String
+    description: String,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFF5F5F5)
+            containerColor = Color(0xFFF5F5F5),
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
                 modifier = Modifier.size(32.dp),
                 imageVector = icon,
                 contentDescription = title,
-                tint = MaterialTheme.colorScheme.primary
+                tint = MaterialTheme.colorScheme.primary,
             )
             Column(
-                modifier = Modifier.weight(1f)
-                    .padding(start = 16.dp)
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 16.dp),
             ) {
                 Text(
                     text = title,
                     color = Color.Gray,
-                    fontSize = 14.sp
+                    fontSize = 14.sp,
                 )
                 Text(
                     text = description,
                     color = Color.Black,
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
                 )
             }
         }
@@ -288,13 +290,13 @@ private fun InfoCard(
 @Preview
 @Composable
 private fun CharacterDetailScreenPreview(
-    @PreviewParameter(CharacterDetailStateParameterProvider::class) state: CharacterDetailState
+    @PreviewParameter(CharacterDetailStateParameterProvider::class) state: CharacterDetailState,
 ) {
     MaterialTheme {
         Surface {
             CharacterDetailContent(
                 state = state,
-                onNavigateBack = {}
+                onNavigateBack = {},
             )
         }
     }

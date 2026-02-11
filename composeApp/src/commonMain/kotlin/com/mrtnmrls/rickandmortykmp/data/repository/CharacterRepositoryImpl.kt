@@ -7,21 +7,18 @@ import com.mrtnmrls.rickandmortykmp.domain.model.CharacterPaging
 import com.mrtnmrls.rickandmortykmp.domain.repository.CharacterRepository
 
 class CharacterRepositoryImpl(
-    private val api: RickAndMortyApi
+    private val api: RickAndMortyApi,
 ) : CharacterRepository {
-    override suspend fun getCharacters(page: Int): Result<CharacterPaging> {
-        return api.getCharacters(page).map { response ->
+    override suspend fun getCharacters(page: Int): Result<CharacterPaging> =
+        api.getCharacters(page).map { response ->
             CharacterPaging(
                 characters = response.results.map { it.toCharacter() },
-                canLoadMore = response.info.next != null
+                canLoadMore = response.info.next != null,
             )
         }
-    }
 
-
-    override suspend fun getCharacter(id: Int): Result<Character> {
-        return api.getCharacter(id).map {
+    override suspend fun getCharacter(id: Int): Result<Character> =
+        api.getCharacter(id).map {
             it.toCharacter()
         }
-    }
 }
